@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: #000; /* Default text color for light mode */
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin: 5px;
+            width: 45%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .hint {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .dark-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+        }
+
+        .dark-toggle span {
+            font-size: 24px;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #111; /* Rich black */
+            color: #fff; /* White text */
+        }
+
+        .container.dark-mode {
+            background-color: #222; /* Very dark grey */
+        }
+
+        button.dark-mode {
+            background-color: #00502e; /* Midnight blue */
+        }
+
+        /* Streak display */
+        #streak {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="message">C</h1>
+        <p id="result">Hai zi cine e</p>
+        <div>
+            <button onclick="checkSender('Andrei')">Coco</button>
+            <button onclick="checkSender('Stefi')">Stefi</button>
+            <button onclick="checkSender('Toma Florin')">Florin</button>
+            <button onclick="checkSender('Matei')">Matei</button>
+            <button onclick="checkSender('Andrei B')">Dexter</button>
+            <button onclick="checkSender('Deni')">Denisa</button>
+            <button onclick="checkSender('Andrada')">Andrada</button>
+            <button onclick="checkSender('Sofia')">Sofia</button>
+            <button onclick="checkSender('🍄Miruna🍁')">Miruna</button>
+        </div>
+    </div>
+
+    <div id="streak">Streak: 0</div>
+
+    <div class="dark-toggle" onclick="toggleDarkMode()">
+        <span>🌙</span>
+    </div>
+
+    <script>
+        let correctSender = '';
+        let correctMessage = '';
+        let streak = 0;
+
+        async function getRandomMessage() {
+            try {
+                const response = await fetch('http://localhost:3000/random-message');
+                const data = await response.json();
+                document.getElementById('message').innerText = data.message;
+                correctSender = data.sender; // Set global variable
+                correctMessage = data.message; // Set global variable
+            } catch (error) {
+                console.error('Error fetching random message:', error);
+            }
+        }
+
+        async function checkSender(senderName) {
+            const resultElement = document.getElementById('result');
+            const streakElement = document.getElementById('streak');
+            if (senderName === correctSender) {
+                resultElement.innerText = 'Corect!'; // Update p content
+                streak++; // Increment streak
+            } else {
+                resultElement.innerText = 'Esti prost ! Raspunsul este : ' + correctSender; // Update p content
+                streak = 0; // Reset streak
+            }
+            streakElement.innerText = 'Streak: ' + streak; // Update streak display
+            // Get a new message for the next round
+            await getRandomMessage();
+        }
+
+        // Call getRandomMessage when the page loads
+        window.onload = getRandomMessage;
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const container = document.querySelector('.container');
+            const buttons = document.querySelectorAll('button');
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                container.classList.remove('dark-mode');
+                buttons.forEach(button => button.classList.remove('dark-mode'));
+            } else {
+                body.classList.add('dark-mode');
+                container.classList.add('dark-mode');
+                buttons.forEach(button => button.classList.add('dark-mode'));
+            }
+        }
+    </script>
+</body>
+
+</html>
